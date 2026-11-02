@@ -1,0 +1,73 @@
+---
+title: "Interactive Report"
+author: "Litzia Galvan Martinez"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    theme: flatly
+    code-fold: show
+execute:
+  warning: false
+  message: false
+editor_options: 
+  chunk_output_type: console
+---
+
+# Introduction
+Air quality is measured using physical and chemical monitoring instruments on the ground, low-cost optical and electrochemical sensors, and orbiting satellites, which feed data into the Air Quality Index (AQI). Definition by (NOAA's Official Website).
+
+## Background Information
+The following information contains data collected by graduate students.
+
+### Packages
+
+```{r}
+#| label: setup
+library(tidyverse)
+library(plotly)
+library(leaflet)
+```
+## Interactive Map 
+```{r}
+#| label: fig-cbl
+#| fig-cap: "Location of UMCES Chesapeake Biological Laboratory."
+
+leaflet() %>%
+   addTiles() %>%  # Default OpenStreetMap base tiles
+   addMarkers(
+       lng = -76.4533, 
+       lat = 38.3191, 
+       popup = "UMCES - Chesapeake Biological Laboratory"
+ ) |> 
+  setView(-76.4533, 38.3191, zoom = 8)
+```
+See @fig-scatter for the results.
+```{r}
+#| label: fig-scatter
+#| fig-cap: "Interactive daily ozone concentration vs. temperature in New York."
+
+p <- ggplot(airquality, aes(x = Temp, y = Ozone, color = factor(Month))) +
+ geom_point(size = 2, alpha = 0.8) +
+ labs(
+   x = "Temperature (°F)",
+   y = "Ozone (ppb)",
+   color = "Month"
+   ) +
+  theme_minimal()
+
+ggplotly(tooltip = "all")
+
+```
+
+```{r}
+#| label: tbl-airquality
+#| tbl-cap: "Stats Summary"
+psych::describe(airquality) |> 
+  knitr::kable(digits = 2)
+```
+
+Our sample size is `{r} nrow(airquality)`.
+
+The `echo: false` option disables the printing of code (only output is displayed).
